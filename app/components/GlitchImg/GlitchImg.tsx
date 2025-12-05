@@ -4,11 +4,16 @@ import { useRef, useEffect, useMemo } from "react";
 // Styles
 import styles from "./styles.module.scss";
 
+type GlitchImgProps = {
+  imageUrl?: string;
+  altText?: string;
+};
+
 export default function GlitchImg({
   imageUrl = "/assets/images/black-modif.webp",
   altText = "Illustration stylisée avec effet glitch",
-}) {
-  const glitchRef = useRef(null);
+}: GlitchImgProps) {
+  const glitchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const glitch = glitchRef.current;
