@@ -10,9 +10,9 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileMenuClosing, setIsMobileMenuClosing] = useState(false);
   const [navbarHeight, setNavbarHeight] = useState(80);
 
-  // Références pour accessibilité et mesures
   const firstItemRef = useRef<HTMLButtonElement | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const navElementRef = useRef<HTMLElement>(null);
@@ -23,8 +23,6 @@ export default function Navbar() {
       if (navElementRef.current) {
         const height = navElementRef.current.offsetHeight;
         setNavbarHeight(height);
-
-        // Synchronisation avec CSS custom properties pour scroll global
         document.documentElement.style.setProperty(
           "--navbar-offset",
           `${height}px`
@@ -35,14 +33,11 @@ export default function Navbar() {
         );
       }
     };
-
     const resizeObserver = new ResizeObserver(measureNavbarHeight);
-
     if (navElementRef.current) {
       resizeObserver.observe(navElementRef.current);
       measureNavbarHeight();
     }
-
     return () => resizeObserver.disconnect();
   }, []);
 
@@ -85,7 +80,6 @@ export default function Navbar() {
     let scrollY = 0;
 
     if (isMobileMenuOpen) {
-      // Verrouillage du scroll
       scrollY = window.scrollY;
       html.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
@@ -93,7 +87,6 @@ export default function Navbar() {
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = "100%";
     } else {
-      // Restauration du scroll à la position précédente
       const top = document.body.style.top;
       const scrollPosition = parseInt(top || "0", 10);
 
@@ -109,7 +102,6 @@ export default function Navbar() {
     }
 
     return () => {
-      // Cleanup si le composant est démonté
       html.style.overflow = "";
       document.body.style.overflow = "";
       document.body.style.position = "";
@@ -135,12 +127,29 @@ export default function Navbar() {
     }
   };
 
+  // Nouvelle fermeture animée
+  const closeMobileMenu = () => {
+    setIsMobileMenuClosing(true);
+  };
+
+  // Gestion de la fin d'animation
+  const handleMobileMenuAnimationEnd = () => {
+    if (isMobileMenuClosing) {
+      setIsMobileMenuOpen(false);
+      setIsMobileMenuClosing(false);
+    }
+  };
+
+  // Scroll synchronisé avec la fermeture animée
   const scrollToSection = (targetId: string) => {
-    closeMobileMenu();
-    // Délai pour permettre la fermeture du menu avant scroll
-    setTimeout(() => {
+    if (window.innerWidth < 800 && isMobileMenuOpen) {
+      closeMobileMenu();
+      setTimeout(() => {
+        handleSmoothScroll(null, targetId);
+      }, 400); // 400ms = durée de l'animation slideDownBottomSheet
+    } else {
       handleSmoothScroll(null, targetId);
-    }, 100);
+    }
   };
 
   // Focus automatique sur le menu mobile
@@ -205,10 +214,6 @@ export default function Navbar() {
 
   const openMobileMenu = () => {
     setIsMobileMenuOpen(true);
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
   };
 
   // Focus sur le premier élément du menu mobile après ouverture
@@ -298,10 +303,18 @@ export default function Navbar() {
         </ul>
       </nav>
 
-      {/* Menu mobile en "bottom sheet" c'est le menu qui apparaît en bas de l'écran */}
+      {/* Menu mobile en "bottom sheet" */}
       {isMobileMenuOpen && (
         <div className={styles.mobileMenuOverlay + " " + styles.visible}>
-          <div className={styles.mobileMenu} tabIndex={-1} ref={mobileMenuRef}>
+          <div
+            className={
+              styles.mobileMenu +
+              (isMobileMenuClosing ? " " + styles.slideOut : "")
+            }
+            tabIndex={-1}
+            ref={mobileMenuRef}
+            onAnimationEnd={handleMobileMenuAnimationEnd}
+          >
             <div className={styles.closeButtonContainer}>
               <NeumorphicButton
                 onClick={closeMobileMenu}
