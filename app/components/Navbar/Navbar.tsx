@@ -132,21 +132,31 @@ export default function Navbar() {
     setIsMobileMenuClosing(true);
   };
 
-  // Gestion de la fin d'animation
+  // Cible de scroll en attente (pour synchroniser avec la fin d'animation)
+  const [pendingScrollTarget, setPendingScrollTarget] = useState<string | null>(
+    null
+  );
+
+  // Gestion de la fin d'animation + scroll synchronisé
   const handleMobileMenuAnimationEnd = () => {
     if (isMobileMenuClosing) {
       setIsMobileMenuOpen(false);
       setIsMobileMenuClosing(false);
+      if (pendingScrollTarget) {
+        // Ajout d'un délai pour garantir le nettoyage du DOM avant le scroll
+        setTimeout(() => {
+          handleSmoothScroll(null, pendingScrollTarget);
+          setPendingScrollTarget(null);
+        }, 50);
+      }
     }
   };
 
   // Scroll synchronisé avec la fermeture animée
   const scrollToSection = (targetId: string) => {
     if (window.innerWidth < 800 && isMobileMenuOpen) {
+      setPendingScrollTarget(targetId);
       closeMobileMenu();
-      setTimeout(() => {
-        handleSmoothScroll(null, targetId);
-      }, 400); // 400ms = durée de l'animation slideDownBottomSheet
     } else {
       handleSmoothScroll(null, targetId);
     }
