@@ -1,0 +1,394 @@
+/* ========================================
+   EFFET GLITCH - Composant d'image avec animation de perturbation
+   ========================================
+   
+   Ce composant crée un effet de "glitch" (perturbation numérique) sur une image.
+   L'effet fonctionne en superposant plusieurs copies de l'image avec des animations
+   de clip-path et des transformations pour simuler des erreurs d'affichage.
+   
+   Structure:
+   - .c-glitch: Conteneur principal
+   - .c-glitch__img: Images superposées (5 copies de la même image)
+   - Responsive avec différentes animations selon la taille d'écran
+   ======================================== */
+
+// Import du module math de Sass pour les calculs
+@use "sass:math";
+// Fonction SCSS personnalisée pour convertir pixels en rem
+@function rem($pixel) {
+  /* DÉCRYPTAGE DE LA FONCTION :
+     
+     // PARAMÈTRE D'ENTRÉE :
+     - $pixel : la valeur en pixels qu'on veut convertir (ex: 24, 32, 16...)
+     
+     // CALCUL :
+     - math.div($pixel, 16) : Division Sass moderne du pixel par 16
+     - + rem : Concatène l'unité "rem" au résultat numérique
+     
+     // RETOUR :
+     - Une valeur CSS complète avec unité (ex: "1.5rem")
+     
+     // POURQUOI MATH.DIV() ?
+     - Sass moderne remplace "/" par math.div() pour éviter la confusion
+     - Plus explicite et sécurisé pour les divisions
+     
+     /////////// EXEMPLES D'UTILISATION :
+     - rem(16) → "1rem"     (16px ÷ 16 = 1rem)
+     - rem(24) → "1.5rem"   (24px ÷ 16 = 1.5rem)
+     - rem(32) → "2rem"     (32px ÷ 16 = 2rem)
+     - rem(8)  → "0.5rem"   (8px ÷ 16 = 0.5rem)
+  */
+  @return math.div($pixel, 16) + rem;
+}
+
+// Conteneur principal du composant glitch
+.c-glitch {
+  width: 100%;
+  height: 280px;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+}
+
+/* ========================================
+   IMAGES SUPERPOSÉES - .c-glitch__img
+   ========================================
+   Système de 5 images identiques superposées :
+   - Image 1 (nth-child(1)) : Image de base, toujours visible
+   - Images 2-5 (nth-child(2-5)) : Couches d'effet glitch, invisibles par défaut
+   
+   Au hover/activation :
+   - Les images 2-5 deviennent animées avec des effets différents
+   - Chaque image a sa propre animation de clip-path
+   ======================================== */
+
+.c-glitch__img {
+  // Positionnement et affichage de base
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: cover;
+  height: 100%;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: translate3d(0, 0, 0);
+  width: 100%;
+
+  .c-glitch:hover & {
+    &:nth-child(n + 2) {
+      animation-duration: 1.5s;
+      animation-delay: 0;
+      animation-timing-function: linear;
+      animation-iteration-count: 3;
+      animation-fill-mode: forwards;
+    }
+  }
+
+  /* Attribution des animations spécifiques à chaque couche - MODE ACTIF */
+  .c-glitch.c-glitch--active &:nth-child(2) {
+    animation-name: glitch-anim-1-mobile; // Animation horizontale avec échelle inversée
+  }
+  .c-glitch.c-glitch--active &:nth-child(3) {
+    animation-name: glitch-anim-2-mobile; // Animation horizontale simple
+  }
+  .c-glitch.c-glitch--active &:nth-child(4) {
+    animation-name: glitch-anim-3-mobile; // Animation verticale avec échelle
+  }
+  .c-glitch.c-glitch--active &:nth-child(5) {
+    animation-name: glitch-anim-4; // Flash coloré bref
+    background-blend-mode: overlay; // Mode de fusion pour l'effet de couleur
+    background-color: var(--glitch-color-blue);
+  }
+}
+
+/* État par défaut : seule la première image (base) est visible */
+.c-glitch__img:nth-child(n + 2) {
+  opacity: 0; // Images 2-5 invisibles par défaut, visibles seulement pendant les animations
+}
+
+/////////RESPONSIVE////////////////////
+
+// Tablette - à partir de 768px
+@media (min-width: 768px) {
+  .c-glitch {
+    height: 350px;
+  }
+  .c-glitch__img {
+    background-size: contain;
+    .c-glitch:hover & {
+      &:nth-child(n + 2) {
+        animation-duration: 2s;
+        animation-iteration-count: 5;
+      }
+    }
+    // Animations tablette/desktop - plus complexes que mobile
+    .c-glitch.c-glitch--active &:nth-child(2) {
+      animation-name: glitch-anim-1;
+    }
+    .c-glitch.c-glitch--active &:nth-child(3) {
+      animation-name: glitch-anim-2;
+    }
+    .c-glitch.c-glitch--active &:nth-child(4) {
+      animation-name: glitch-anim-3;
+    }
+  }
+}
+
+// Desktop - à partir de 1024px
+@media (min-width: 1024px) {
+  .c-glitch {
+    height: 100%;
+  }
+  .c-glitch__img {
+    .c-glitch:hover & {
+      &:nth-child(n + 2) {
+        animation-duration: 2.5s;
+        animation-iteration-count: infinite;
+      }
+    }
+  }
+}
+
+// Large desktop - à partir de 1440px
+@media (min-width: 1440px) {
+  .c-glitch__img {
+    .c-glitch:hover & {
+      &:nth-child(n + 2) {
+        animation-duration: 3s; // Animation encore plus lente pour grand écran
+      }
+    }
+  }
+}
+
+// Accessibilité : Réduction des animations pour les utilisateurs sensibles
+@media (prefers-reduced-motion: reduce) {
+  .c-glitch__img {
+    .c-glitch:hover & {
+      &:nth-child(n + 2) {
+        animation-duration: 0.5s;
+        animation-iteration-count: 1;
+      }
+    }
+  }
+}
+
+@keyframes glitch-anim-1-mobile {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate3d(20px, 0, 0) scale3d(-1, -1, 1);
+
+    clip-path: polygon(0 5%, 100% 5%, 100% 15%, 0 15%);
+  }
+  25% {
+    clip-path: polygon(0 25%, 100% 25%, 100% 35%, 0 35%);
+  }
+  50% {
+    clip-path: polygon(0 45%, 100% 45%, 100% 55%, 0 55%);
+  }
+  75% {
+    clip-path: polygon(0 65%, 100% 65%, 100% 75%, 0 75%);
+  }
+}
+
+@keyframes glitch-anim-2-mobile {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate3d(-8px, 0, 0);
+    clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%);
+  }
+  33% {
+    clip-path: polygon(0 30%, 100% 30%, 100% 40%, 0 40%);
+  }
+  66% {
+    clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%);
+  }
+}
+
+@keyframes glitch-anim-3-mobile {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate3d(0, -3px, 0) scale3d(-1, -1, 1);
+    clip-path: polygon(0 15%, 100% 15%, 100% 25%, 0 25%);
+  }
+  50% {
+    clip-path: polygon(0 50%, 100% 50%, 100% 60%, 0 60%);
+  }
+}
+
+@keyframes glitch-anim-1 {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate3d(40px, 0, 0) scale3d(-1, -1, 1);
+    clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%);
+  }
+  20% {
+    clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%);
+  }
+  30% {
+    clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%);
+  }
+  40% {
+    clip-path: polygon(0 1%, 100% 1%, 100% 2%, 0 2%);
+  }
+  50% {
+    clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%);
+  }
+  55% {
+    clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%);
+  }
+  60% {
+    clip-path: polygon(0 50%, 100% 50%, 100% 20%, 0 20%);
+  }
+  65% {
+    clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%);
+  }
+  70% {
+    clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%);
+  }
+  80% {
+    clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%);
+  }
+  85% {
+    clip-path: polygon(0 60%, 100% 60%, 100% 65%, 0 65%);
+  }
+  95% {
+    clip-path: polygon(0 72%, 100% 72%, 100% 78%, 0 78%);
+  }
+}
+
+@keyframes glitch-anim-2 {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate3d(-10px, 0, 0);
+    clip-path: polygon(0 25%, 100% 25%, 100% 30%, 0 30%);
+  }
+  10% {
+    clip-path: polygon(0 3%, 100% 3%, 100% 3%, 0 3%);
+  }
+  15% {
+    clip-path: polygon(0 5%, 100% 5%, 100% 20%, 0 20%);
+  }
+  17% {
+    clip-path: polygon(0 20%, 100% 20%, 100% 20%, 0 20%);
+  }
+  19% {
+    clip-path: polygon(0 40%, 100% 40%, 100% 40%, 0 40%);
+  }
+  33% {
+    clip-path: polygon(0 52%, 100% 52%, 100% 59%, 0 59%);
+  }
+  35% {
+    clip-path: polygon(0 60%, 100% 60%, 100% 60%, 0 60%);
+  }
+  40% {
+    clip-path: polygon(0 75%, 100% 75%, 100% 75%, 0 75%);
+  }
+  45% {
+    clip-path: polygon(0 65%, 100% 65%, 100% 40%, 0 40%);
+  }
+  49% {
+    clip-path: polygon(0 45%, 100% 45%, 100% 50%, 0 50%);
+  }
+  50% {
+    clip-path: polygon(0 14%, 100% 14%, 100% 33%, 0 33%);
+  }
+  55% {
+    clip-path: polygon(0 15%, 100% 15%, 100% 35%, 0 35%);
+  }
+  60% {
+    clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%);
+  }
+  70% {
+    clip-path: polygon(0 65%, 100% 65%, 100% 60%, 0 60%);
+  }
+  80% {
+    clip-path: polygon(0 80%, 100% 80%, 100% 85%, 0 85%);
+  }
+  90% {
+    clip-path: polygon(0 55%, 100% 55%, 100% 65%, 0 65%);
+  }
+}
+
+@keyframes glitch-anim-3 {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate3d(0, -5px, 0) scale3d(-1, -1, 1);
+    clip-path: polygon(0 1%, 100% 1%, 100% 3%, 0 3%);
+  }
+  5% {
+    clip-path: polygon(0 10%, 100% 10%, 100% 9%, 0 9%);
+  }
+  11% {
+    clip-path: polygon(0 5%, 100% 5%, 100% 6%, 0 6%);
+  }
+  20% {
+    clip-path: polygon(0 20%, 100% 20%, 100% 20%, 0 20%);
+  }
+  25% {
+    clip-path: polygon(0 10%, 100% 10%, 100% 10%, 0 10%);
+  }
+  35% {
+    clip-path: polygon(0 30%, 100% 30%, 100% 25%, 0 25%);
+  }
+  42% {
+    clip-path: polygon(0 15%, 100% 15%, 100% 16%, 0 16%);
+  }
+  48% {
+    clip-path: polygon(0 40%, 100% 40%, 100% 39%, 0 39%);
+  }
+  50% {
+    clip-path: polygon(0 20%, 100% 20%, 100% 21%, 0 21%);
+  }
+  56% {
+    clip-path: polygon(0 60%, 100% 60%, 100% 55%, 0 55%);
+  }
+  61% {
+    clip-path: polygon(0 30%, 100% 30%, 100% 31%, 0 31%);
+  }
+  68% {
+    clip-path: polygon(0 70%, 100% 70%, 100% 69%, 0 69%);
+  }
+  72% {
+    clip-path: polygon(0 40%, 100% 40%, 100% 41%, 0 41%);
+  }
+  77% {
+    clip-path: polygon(0 80%, 100% 80%, 100% 75%, 0 75%);
+  }
+  81% {
+    clip-path: polygon(0 50%, 100% 50%, 100% 51%, 0 51%);
+  }
+  86% {
+    clip-path: polygon(0 90%, 100% 90%, 100% 90%, 0 90%);
+  }
+  90% {
+    clip-path: polygon(0 60%, 100% 60%, 100% 60%, 0 60%);
+  }
+  92% {
+    clip-path: polygon(0 100%, 100% 100%, 100% 99%, 0 99%);
+  }
+  94% {
+    clip-path: polygon(0 70%, 100% 70%, 100% 71%, 0 71%);
+  }
+}
+
+@keyframes glitch-anim-4 {
+  0%,
+  5% {
+    opacity: 0.2;
+
+    transform: translate3d(10px, 5px, 0);
+  }
+  5.5%,
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+}

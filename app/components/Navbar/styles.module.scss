@@ -1,0 +1,362 @@
+.logoButton {
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  background: transparent;
+
+  &:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.3);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+.logoContainer {
+  height: 40px;
+  width: 120px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.navbar {
+  position: fixed;
+  inset: 0.5rem 0.5rem auto 0.5rem;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem max(1rem, env(safe-area-inset-left)) 0.4rem
+    max(1rem, env(safe-area-inset-right));
+  border-radius: 14px;
+  background: rgba(26, 26, 26, 0.25);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 8px 8px 16px var(--shadow-dark),
+    -8px -8px 16px var(--shadow-light);
+  transition: all 0.3s ease;
+
+  &.scrolled {
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 1px 1px 2px var(--shadow-light),
+      inset -1px -1px 2px var(--shadow-dark), 8px 8px 16px var(--shadow-dark),
+      -8px -8px 16px var(--shadow-light);
+  }
+}
+
+.desktopMenu {
+  display: none;
+}
+
+.burgerButton {
+  width: 38px;
+  height: 32px;
+  position: relative;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 1200;
+}
+
+.burgerLine {
+  position: absolute;
+  width: 20px;
+  height: 2.4px;
+  background: var(--foreground);
+  border-radius: 2px;
+  transition: opacity 0.3s ease;
+  left: 9px;
+
+  &:nth-child(1) {
+    top: 9px;
+  }
+  &:nth-child(2) {
+    top: 15px;
+  }
+  &:nth-child(3) {
+    top: 21px;
+  }
+}
+
+.mobileMenuOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1100;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(8px);
+
+  &.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &.closing {
+    opacity: 0;
+    pointer-events: auto;
+  }
+}
+
+.mobileMenu {
+  width: 100vw;
+  height: 95vh;
+  max-height: 700px;
+  min-height: 400px;
+  background: var(--background);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem 1rem 2.5rem;
+  position: relative;
+  outline: none;
+  overflow: hidden;
+  animation: slideUpBottomSheet 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+
+  &:focus {
+    outline: none;
+  }
+
+  &.slideOut {
+    animation: slideDownBottomSheet 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19)
+      forwards;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 2px;
+    transition: background-color 0.3s ease;
+  }
+
+  &:hover::before {
+    background: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.mobileMenuHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem 0 1.5rem 0;
+  position: relative;
+}
+
+.mobileMenuTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--foreground);
+  opacity: 0;
+  animation: fadeInTitle 0.6s ease 0.2s forwards;
+}
+
+.closeButtonContainer {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+}
+
+.closeButtonNeumorphic {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileMenuList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  flex: 1;
+  z-index: 2;
+}
+
+.menuItem {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: slideUpMenuItem 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px;
+
+  &:nth-child(1) {
+    animation-delay: 0.3s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.4s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.5s;
+  }
+}
+
+@keyframes slideUpBottomSheet {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDownBottomSheet {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideUpMenuItem {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInTitle {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+////////////RESPONSIVE////////////
+// Mobile - jusqu'à 375px
+@media (min-width: 376px) {
+  .logoContainer {
+    height: 50px;
+    width: 130px;
+  }
+  .navbar {
+    padding: 0.45rem max(1rem, env(safe-area-inset-left)) 0.45rem
+      max(1rem, env(safe-area-inset-right));
+  }
+}
+
+// Small Mobile - jusqu'à 480px
+@media (min-width: 481px) {
+  .logoContainer {
+    height: 60px;
+    width: 140px;
+  }
+  .navbar {
+    padding: 0.5rem max(1rem, env(safe-area-inset-left)) 0.5rem
+      max(1rem, env(safe-area-inset-right));
+  }
+}
+
+// Tablet - à partir de 641px
+@media (min-width: 641px) {
+  .logoContainer {
+    height: 70px;
+    width: 150px;
+  }
+  .navbar {
+    padding: 0.6rem max(1rem, env(safe-area-inset-left)) 0.6rem
+      max(1rem, env(safe-area-inset-right));
+  }
+}
+
+// Small Tablet - jusqu'à 768px
+@media (min-width: 769px) {
+  .logoContainer {
+    height: 80px;
+    width: 160px;
+  }
+  .navbar {
+    justify-content: space-around;
+    padding: 0.8rem max(1rem, env(safe-area-inset-left)) 0.8rem
+      max(1rem, env(safe-area-inset-right));
+  }
+  .desktopMenu {
+    display: flex;
+    gap: 2rem;
+  }
+  .burgerButton {
+    display: none;
+  }
+  .mobileMenuOverlay {
+    display: none !important;
+  }
+}
+
+// Small Height Screens - max-height 600px
+@media (max-height: 600px) {
+  .mobileMenu {
+    height: 85vh;
+    min-height: 350px;
+    padding: 2rem 1.5rem 2rem;
+  }
+  .mobileMenuList {
+    gap: 2rem;
+  }
+  .mobileMenuHeader {
+    padding: 1rem 0 1.5rem 0;
+  }
+}

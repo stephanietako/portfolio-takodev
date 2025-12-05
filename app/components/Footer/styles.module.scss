@@ -1,0 +1,97 @@
+.footer {
+  position: sticky;
+  bottom: 0.5rem;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem max(1rem, env(safe-area-inset-left)) 0.3rem
+    max(1rem, env(safe-area-inset-right));
+  border-radius: 14px;
+  background: rgba(26, 26, 26, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 1px 1px 2px var(--shadow-light),
+    inset -1px -1px 2px var(--shadow-dark), 8px 8px 16px var(--shadow-dark),
+    -8px -8px 16px var(--shadow-light);
+  transition: all 0.3s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+  }
+}
+
+.content {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1rem;
+  background: transparent;
+}
+
+.brandSection {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.copyright {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+
+  .brandName {
+    color: var(--foreground);
+    font-weight: 600;
+    background: linear-gradient(135deg, #ffffff, #b0b0b0);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.tagline {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+
+/////////RESPONSIVE/////////
+// Petits écrans - jusqu'à 479px
+@media (min-width: 480px) {
+  .copyright {
+    font-size: 0.8rem;
+  }
+  .tagline {
+    font-size: 0.7rem;
+  }
+}
+
+// Tablette - à partir de 768px
+@media (min-width: 768px) {
+  .content {
+    padding: 0 2rem;
+  }
+  .copyright {
+    font-size: 0.9rem;
+  }
+  .tagline {
+    font-size: 0.75rem;
+  }
+}
