@@ -64,7 +64,8 @@ Ouvrir [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 ### Projets personnels
 
 - **Palm Trees Affair** - E-commerce avec 3D (Next.js, Three.js, Sanity)
-- **jmsite** - Portfolio 3D interactif (React, Three.js)
+- **jmsite** - Portfolio 3D interactif (React, Vite, Three.js)
 
 _Développé avec ❤️ par Tako Dev_
+
 # portfolio-takodev
