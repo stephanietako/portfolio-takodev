@@ -123,31 +123,33 @@ const projects: Project[] = [
     ],
   },
   {
-    title: "jmsite - Portfolio avec animations 3D",
+    title: "jmsite - Portfolio (Mutation Wolf)",
     description:
-      "Portfolio personnel avec animations web immersives et effets 3D",
-    stack: "React.js, Three.js, @react-three/fiber, @react-three/drei, SCSS",
+      "Portfolio présentant l'œuvre 3D interactive « Mutation Wolf » (développé avec Vite)",
+    stack:
+      "React + Vite, Three.js, @react-three/fiber, @react-three/drei, SCSS",
     link: "https://jmsite.vercel.app",
     longDescription:
-      "jmsite est un portfolio personnel mettant en avant les compétences en développement web et animations 3D. Le projet démontre la maîtrise des technologies web modernes pour créer des expériences utilisateur immersives.",
+      "jmsite est le portfolio dédié à l'œuvre « Mutation Wolf » de Jean‑Marc Eliette. Le projet a été retravaillé et migré vers Vite pour un meilleur temps de démarrage et une build optimisée. Il met l'accent sur l'interaction 3D, la performance et l'accessibilité.",
     imageUrl: "/assets/logo/takodev-logo-black.png",
     features: [
-      "Animation graphique interactive 3D à l'accueil",
-      "Navigation responsive et fluide",
-      "Galerie dynamique avec système de modales animées",
-      "Scrolling interactif avec navigation verticale",
-      "Effets lumineux et textures 3D",
-      "Animations adaptatives selon la taille d'écran",
+      "Canvas 3D interactif montrant « Mutation Wolf »",
+      "Contrôles click/drag pour rotation, tap pour pause/reprise (mobile)",
+      "Raccourcis clavier : Espace (pause/reprise), ←/→ (impulsion de rotation), R (reset)",
+      "Wrapper Canvas focusable avec aria-describedby et annonce via aria-live",
+      "Respect de prefers-reduced-motion pour réduire les animations",
+      "Design responsive et performance optimisée via Vite",
     ],
     category: "personal",
-    motivation: "Démontrer la maîtrise des animations 3D sur le web",
-    year: "2024",
+    motivation:
+      "Mettre en valeur une œuvre artistique interactive en optimisant l'expérience et les performances (migration vers Vite)",
+    year: "2025",
     technicalDetails: [
-      "Architecture React.js modulaire avec hooks personnalisés",
-      "Animations 3D avancées avec Three.js et React Three Fiber",
-      "Effets visuels complexes via React Three Drei",
-      "Optimisation performance pour le rendu 3D temps réel",
-      "Design responsive avec animations adaptatives",
+      "Migré vers Vite pour un dev server plus rapide et build optimisée",
+      "Frontend : React + Vite, bundling Rollup sous-jacent",
+      "3D : Three.js avec @react-three/fiber et @react-three/drei",
+      "Accessibilité : Canvas focusable, aria-live, gestion prefers-reduced-motion",
+      "Scripts : npm run dev, npm run build",
     ],
   },
 ];
@@ -158,6 +160,13 @@ export default function Projects() {
   const [activeCategory, setActiveCategory] = useState<
     "all" | "professional" | "personal"
   >("all");
+
+  // Comptes par catégorie pour affichage
+  const proCount = projects.filter((p) => p.category === "professional").length;
+  const personalCount = projects.filter(
+    (p) => p.category === "personal"
+  ).length;
+  const totalCount = projects.length;
 
   const filteredProjects = projects.filter(
     (project) => activeCategory === "all" || project.category === activeCategory
@@ -177,24 +186,29 @@ export default function Projects() {
     <section id="projects" className={styles.projects}>
       <h2>Mes projets</h2>
 
+      {/* Résumé accessible des counts */}
+      <div className={styles.projectSummary} aria-live="polite">
+        {`Tous (${totalCount}) • Pro (${proCount}) • Perso (${personalCount})`}
+      </div>
+
       <div className={styles.categoryTabs}>
         <NeumorphicButton
           active={activeCategory === "all"}
           onClick={() => setActiveCategory("all")}
         >
-          Tous
+          {`Tous (${totalCount})`}
         </NeumorphicButton>
         <NeumorphicButton
           active={activeCategory === "professional"}
           onClick={() => setActiveCategory("professional")}
         >
-          Professionnels
+          {`Professionnels (${proCount})`}
         </NeumorphicButton>
         <NeumorphicButton
           active={activeCategory === "personal"}
           onClick={() => setActiveCategory("personal")}
         >
-          Personnels
+          {`Personnels (${personalCount})`}
         </NeumorphicButton>
       </div>
 
@@ -218,7 +232,7 @@ export default function Projects() {
                   <p>{project.description}</p>
 
                   <div className={styles.stackContainer}>
-                    {project.stack.split(",").map((tech, idx) => (
+                    {(project.stack || "").split(",").map((tech, idx) => (
                       <span key={idx} className={styles.stackTag}>
                         {tech.trim()}
                       </span>
@@ -278,7 +292,7 @@ export default function Projects() {
 
               <h4>Technologies utilisées</h4>
               <div className={styles.stackTags}>
-                {selectedProject.stack.split(",").map((tech, idx) => (
+                {(selectedProject.stack || "").split(",").map((tech, idx) => (
                   <span key={idx} className={styles.stackTag}>
                     {tech.trim()}
                   </span>
@@ -287,14 +301,14 @@ export default function Projects() {
 
               <h4>Fonctionnalités clés</h4>
               <ul>
-                {selectedProject.features.map((feature, idx) => (
+                {selectedProject.features?.map((feature, idx) => (
                   <li key={idx}>{feature}</li>
                 ))}
               </ul>
 
               <h4>Détails techniques</h4>
               <ul>
-                {selectedProject.technicalDetails.map((detail, idx) => (
+                {selectedProject.technicalDetails?.map((detail, idx) => (
                   <li key={idx}>{detail}</li>
                 ))}
               </ul>
