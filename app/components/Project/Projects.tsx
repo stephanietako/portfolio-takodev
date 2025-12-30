@@ -149,7 +149,7 @@ const projects: Project[] = [
       "Frontend : React + Vite, bundling Rollup sous-jacent",
       "3D : Three.js avec @react-three/fiber et @react-three/drei",
       "Accessibilité : Canvas focusable, aria-live, gestion prefers-reduced-motion",
-      "Scripts : npm run dev, npm run build",
+      "Styles : SCSS modulaire pour une organisation claire",
     ],
   },
 ];
